@@ -1,0 +1,1452 @@
+$date
+	Wed Jan 28 16:07:29 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module tb_snn $end
+$var wire 1 ! led_out $end
+$var parameter 32 " CLK_PERIOD $end
+$var parameter 32 # LEAK $end
+$var parameter 32 $ POTENTIAL_WIDTH $end
+$var parameter 32 % SIM_TIME $end
+$var parameter 32 & SPIKE_PERIOD $end
+$var parameter 32 ' THRESHOLD $end
+$var reg 1 ( clk $end
+$var reg 2 ) current_input [1:0] $end
+$var reg 1 * rst_n $end
+$var reg 1 + switch_0 $end
+$var reg 1 , switch_1 $end
+$var integer 32 - expected_output [31:0] $end
+$var integer 32 . output_spike_count [31:0] $end
+$var integer 32 / test_number [31:0] $end
+$scope module dut $end
+$var wire 1 ( clk $end
+$var wire 1 ! led_out $end
+$var wire 1 * rst_n $end
+$var wire 1 + switch_0 $end
+$var wire 1 , switch_1 $end
+$var wire 1 0 spike_output $end
+$var wire 1 1 spike_encoded_1 $end
+$var wire 1 2 spike_encoded_0 $end
+$var parameter 32 3 LEAK $end
+$var parameter 32 4 POTENTIAL_WIDTH $end
+$var parameter 32 5 SPIKE_PERIOD $end
+$var parameter 32 6 THRESHOLD $end
+$scope module core $end
+$var wire 1 ( clk $end
+$var wire 1 * rst_n $end
+$var wire 1 + switch_0 $end
+$var wire 1 , switch_1 $end
+$var wire 8 7 weighted_i1_h1 [7:0] $end
+$var wire 8 8 weighted_i1_h0 [7:0] $end
+$var wire 8 9 weighted_i0_h1 [7:0] $end
+$var wire 8 : weighted_i0_h0 [7:0] $end
+$var wire 8 ; weighted_h1_o [7:0] $end
+$var wire 8 < weighted_h1_h0_inhib [7:0] $end
+$var wire 8 = weighted_h0_o [7:0] $end
+$var wire 8 > weighted_h0_h1_inhib [7:0] $end
+$var wire 8 ? weighted_both_inhib [7:0] $end
+$var wire 1 0 spike_out $end
+$var wire 1 1 spike_in_1 $end
+$var wire 1 2 spike_in_0 $end
+$var wire 1 @ spike_hidden_1 $end
+$var wire 1 A spike_hidden_0 $end
+$var wire 9 B current_output [8:0] $end
+$var wire 9 C current_hidden_1 [8:0] $end
+$var wire 9 D current_hidden_0 [8:0] $end
+$var parameter 32 E LEAK $end
+$var parameter 32 F POTENTIAL_WIDTH $end
+$var parameter 32 G THRESHOLD $end
+$var parameter 32 H WEIGHT_BOTH_INHIB $end
+$var parameter 32 I WEIGHT_H0_H1 $end
+$var parameter 32 J WEIGHT_H0_O $end
+$var parameter 32 K WEIGHT_H1_H0 $end
+$var parameter 32 L WEIGHT_H1_O $end
+$var parameter 32 M WEIGHT_I0_H0 $end
+$var parameter 32 N WEIGHT_I0_H1 $end
+$var parameter 32 O WEIGHT_I1_H0 $end
+$var parameter 32 P WEIGHT_I1_H1 $end
+$scope module hidden_neuron_0 $end
+$var wire 1 ( clk $end
+$var wire 9 Q input_current [8:0] $end
+$var wire 8 R neuron_id [7:0] $end
+$var wire 1 * rst_n $end
+$var parameter 32 S LEAK $end
+$var parameter 32 T POTENTIAL_WIDTH $end
+$var parameter 32 U THRESHOLD $end
+$var parameter 32 V WEIGHT $end
+$var reg 8 W membrane_potential [7:0] $end
+$var reg 9 X next_potential [8:0] $end
+$var reg 1 A spike_out $end
+$upscope $end
+$scope module hidden_neuron_1 $end
+$var wire 1 ( clk $end
+$var wire 9 Y input_current [8:0] $end
+$var wire 8 Z neuron_id [7:0] $end
+$var wire 1 * rst_n $end
+$var parameter 32 [ LEAK $end
+$var parameter 32 \ POTENTIAL_WIDTH $end
+$var parameter 32 ] THRESHOLD $end
+$var parameter 32 ^ WEIGHT $end
+$var reg 8 _ membrane_potential [7:0] $end
+$var reg 9 ` next_potential [8:0] $end
+$var reg 1 @ spike_out $end
+$upscope $end
+$scope module output_neuron $end
+$var wire 1 ( clk $end
+$var wire 9 a input_current [8:0] $end
+$var wire 8 b neuron_id [7:0] $end
+$var wire 1 * rst_n $end
+$var parameter 32 c LEAK $end
+$var parameter 32 d POTENTIAL_WIDTH $end
+$var parameter 32 e THRESHOLD $end
+$var parameter 32 f WEIGHT $end
+$var reg 8 g membrane_potential [7:0] $end
+$var reg 9 h next_potential [8:0] $end
+$var reg 1 0 spike_out $end
+$upscope $end
+$upscope $end
+$scope module encoder_0 $end
+$var wire 1 ( clk $end
+$var wire 1 + enable $end
+$var wire 1 * rst_n $end
+$var parameter 32 i SPIKE_PERIOD $end
+$var reg 4 j counter [3:0] $end
+$var reg 1 2 spike_out $end
+$upscope $end
+$scope module encoder_1 $end
+$var wire 1 ( clk $end
+$var wire 1 , enable $end
+$var wire 1 * rst_n $end
+$var parameter 32 k SPIKE_PERIOD $end
+$var reg 4 l counter [3:0] $end
+$var reg 1 1 spike_out $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+b110 k
+b110 i
+b0 f
+b10010 e
+b1000 d
+b1 c
+b0 ^
+b10010 ]
+b1000 \
+b1 [
+b0 V
+b10010 U
+b1000 T
+b1 S
+b1111 P
+b1111 O
+b1111 N
+b1111 M
+b10110 L
+b11111111111111111111111111101100 K
+b10110 J
+b11111111111111111111111111101100 I
+b11111111111111111111111111000100 H
+b10010 G
+b1000 F
+b1 E
+b10010 6
+b110 5
+b1000 4
+b1 3
+b10010 '
+b110 &
+b1111101000 %
+b1000 $
+b1 #
+b1010 "
+$end
+#0
+$dumpvars
+b0 l
+b0 j
+bx h
+b0 g
+b10 b
+b0 a
+bx `
+b0 _
+b1 Z
+b0 Y
+bx X
+b0 W
+b0 R
+b0 Q
+b0 D
+b0 C
+b0 B
+0A
+0@
+b0 ?
+b0 >
+b0 =
+b0 <
+b0 ;
+b0 :
+b0 9
+b0 8
+b0 7
+02
+01
+00
+b0 /
+b0 .
+bx -
+0,
+0+
+0*
+bx )
+0(
+0!
+$end
+#5000
+1(
+#10000
+0(
+#15000
+1(
+#20000
+0(
+#25000
+1(
+#30000
+0(
+1*
+#35000
+b111111111 X
+b111111111 `
+b111111111 h
+1(
+#40000
+0(
+#45000
+1(
+#50000
+0(
+b0 -
+b0 )
+b1 /
+#55000
+1(
+#60000
+0(
+#65000
+1(
+#70000
+0(
+#75000
+1(
+#80000
+0(
+#85000
+1(
+#90000
+0(
+#95000
+1(
+#100000
+0(
+#105000
+1(
+#110000
+0(
+#115000
+1(
+#120000
+0(
+#125000
+1(
+#130000
+0(
+#135000
+1(
+#140000
+0(
+#145000
+1(
+#150000
+0(
+#155000
+1(
+#160000
+0(
+#165000
+1(
+#170000
+0(
+#175000
+1(
+#180000
+0(
+#185000
+1(
+#190000
+0(
+#195000
+1(
+#200000
+0(
+#205000
+1(
+#210000
+0(
+#215000
+1(
+#220000
+0(
+#225000
+1(
+#230000
+0(
+#235000
+1(
+#240000
+0(
+#245000
+1(
+#250000
+0(
+1,
+b1 -
+b1 )
+b10 /
+#255000
+b1 l
+1(
+#260000
+0(
+#265000
+b10 l
+1(
+#270000
+0(
+#275000
+b11 l
+1(
+#280000
+0(
+#285000
+b100 l
+1(
+#290000
+0(
+#295000
+b101 l
+1(
+#300000
+0(
+#305000
+b1111 C
+b1111 Y
+b1111 7
+b1111 D
+b1111 Q
+b1111 8
+11
+b0 l
+1(
+#310000
+0(
+#315000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+01
+b1 l
+b1110 W
+b1110 _
+b1110 X
+b1110 `
+1(
+#320000
+0(
+#325000
+b1101 _
+b1101 W
+b10 l
+b1101 `
+b1101 X
+1(
+#330000
+0(
+#335000
+b11 l
+b1100 W
+b1100 _
+b1100 X
+b1100 `
+1(
+#340000
+0(
+#345000
+b1011 _
+b1011 W
+b100 l
+b1011 `
+b1011 X
+1(
+#350000
+0(
+#355000
+b101 l
+b1010 W
+b1010 _
+b1010 X
+b1010 `
+1(
+#360000
+0(
+#365000
+b1111 C
+b1111 Y
+b1111 7
+b1111 D
+b1111 Q
+b1111 8
+b1001 _
+b1001 W
+11
+b0 l
+b1001 `
+b1001 X
+1(
+#370000
+0(
+#375000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+01
+b1 l
+b10111 W
+b10111 _
+b10111 X
+b10111 `
+1(
+#380000
+0(
+#385000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b101100 B
+b101100 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b10 l
+b10110 `
+b10110 X
+1(
+#390000
+0(
+#395000
+b0 =
+b0 C
+b0 Y
+b0 >
+b0 B
+b0 a
+b0 ;
+b0 D
+b0 Q
+b0 <
+b11 l
+0A
+0@
+b101011 g
+b111101011 X
+b111101011 `
+b101011 h
+1(
+#400000
+0(
+#405000
+b0 g
+1!
+10
+b100 l
+b101010 h
+b111111111 `
+b111111111 X
+1(
+#410000
+0(
+#415000
+b101 l
+0!
+00
+b111111111 h
+b1 .
+1(
+#420000
+0(
+#425000
+b1111 C
+b1111 Y
+b1111 7
+b1111 D
+b1111 Q
+b1111 8
+11
+b0 l
+1(
+#430000
+0(
+#435000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+01
+b1 l
+b1110 W
+b1110 _
+b1110 X
+b1110 `
+1(
+#440000
+0(
+#445000
+b1101 _
+b1101 W
+b10 l
+b1101 `
+b1101 X
+1(
+#450000
+0(
+#455000
+b11 l
+b1100 W
+b1100 _
+b1100 X
+b1100 `
+1(
+#460000
+0(
+#465000
+b1011 _
+b1011 W
+b100 l
+b1011 `
+b1011 X
+1(
+#470000
+0(
+0,
+1+
+b0 .
+b10 )
+b11 /
+#475000
+b1 j
+b0 l
+b1010 W
+b1010 _
+b1010 X
+b1010 `
+1(
+#480000
+0(
+#485000
+b1001 _
+b1001 W
+b10 j
+b1001 `
+b1001 X
+1(
+#490000
+0(
+#495000
+b11 j
+b1000 W
+b1000 _
+b1000 X
+b1000 `
+1(
+#500000
+0(
+#505000
+b111 _
+b111 W
+b100 j
+b111 `
+b111 X
+1(
+#510000
+0(
+#515000
+b101 j
+b110 W
+b110 _
+b110 X
+b110 `
+1(
+#520000
+0(
+#525000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b101 _
+b101 W
+12
+b0 j
+b101 `
+b101 X
+1(
+#530000
+0(
+#535000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b10011 W
+b10011 _
+b10011 X
+b10011 `
+1(
+#540000
+0(
+#545000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b101100 B
+b101100 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b10 j
+b10010 `
+b10010 X
+1(
+#550000
+0(
+#555000
+b0 =
+b0 C
+b0 Y
+b0 >
+b0 B
+b0 a
+b0 ;
+b0 D
+b0 Q
+b0 <
+b11 j
+0A
+0@
+b101011 g
+b111101011 X
+b111101011 `
+b101011 h
+1(
+#560000
+0(
+#565000
+b0 g
+1!
+10
+b100 j
+b101010 h
+b111111111 `
+b111111111 X
+1(
+#570000
+0(
+#575000
+b101 j
+0!
+00
+b111111111 h
+b1 .
+1(
+#580000
+0(
+#585000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+12
+b0 j
+1(
+#590000
+0(
+#595000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b1110 W
+b1110 _
+b1110 X
+b1110 `
+1(
+#600000
+0(
+#605000
+b1101 _
+b1101 W
+b10 j
+b1101 `
+b1101 X
+1(
+#610000
+0(
+#615000
+b11 j
+b1100 W
+b1100 _
+b1100 X
+b1100 `
+1(
+#620000
+0(
+#625000
+b1011 _
+b1011 W
+b100 j
+b1011 `
+b1011 X
+1(
+#630000
+0(
+#635000
+b101 j
+b1010 W
+b1010 _
+b1010 X
+b1010 `
+1(
+#640000
+0(
+#645000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b1001 _
+b1001 W
+12
+b0 j
+b1001 `
+b1001 X
+1(
+#650000
+0(
+#655000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b10111 W
+b10111 _
+b10111 X
+b10111 `
+1(
+#660000
+0(
+#665000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b101100 B
+b101100 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b10 j
+b10110 `
+b10110 X
+1(
+#670000
+0(
+#675000
+b0 =
+b0 C
+b0 Y
+b0 >
+b0 B
+b0 a
+b0 ;
+b0 D
+b0 Q
+b0 <
+b11 j
+0A
+0@
+b101011 g
+b111101011 X
+b111101011 `
+b101011 h
+1(
+#680000
+0(
+#685000
+b0 g
+1!
+10
+b100 j
+b101010 h
+b111111111 `
+b111111111 X
+1(
+#690000
+0(
+#695000
+b101 j
+0!
+00
+b111111111 h
+b10 .
+1(
+#700000
+0(
+#705000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+12
+b0 j
+1(
+#710000
+0(
+#715000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b1110 W
+b1110 _
+b1110 X
+b1110 `
+1(
+#720000
+0(
+#725000
+b1101 _
+b1101 W
+b10 j
+b1101 `
+b1101 X
+1(
+#730000
+0(
+#735000
+b11 j
+b1100 W
+b1100 _
+b1100 X
+b1100 `
+1(
+#740000
+b111000100 B
+b111000100 a
+b11000100 ?
+0(
+1,
+b0 .
+b0 -
+b11 )
+b100 /
+#745000
+b1011 _
+b1011 W
+b1 l
+b100 j
+b111000011 h
+b1011 `
+b1011 X
+1(
+#750000
+0(
+#755000
+b101 j
+b10 l
+b1010 W
+b1010 _
+b1010 X
+b1010 `
+1(
+#760000
+0(
+#765000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b1001 _
+b1001 W
+b11 l
+12
+b0 j
+b1001 `
+b1001 X
+1(
+#770000
+0(
+#775000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b100 l
+b10111 W
+b10111 _
+b10111 X
+b10111 `
+1(
+#780000
+0(
+#785000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b111110000 B
+b111110000 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b101 l
+b10 j
+b10110 `
+b10110 X
+1(
+#790000
+0(
+#795000
+b1111 7
+b1111 8
+b0 =
+b1111 C
+b1111 Y
+b0 >
+b111000100 B
+b111000100 a
+b0 ;
+b1111 D
+b1111 Q
+b0 <
+b11 j
+11
+b0 l
+0A
+0@
+b111101011 X
+b111101011 `
+b111101111 h
+1(
+#800000
+0(
+#805000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+b1110 _
+b1110 W
+01
+b1 l
+b100 j
+b111000011 h
+b1110 `
+b1110 X
+1(
+#810000
+0(
+#815000
+b101 j
+b10 l
+b1101 W
+b1101 _
+b1101 X
+b1101 `
+1(
+#820000
+0(
+#825000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b1100 _
+b1100 W
+b11 l
+12
+b0 j
+b1100 `
+b1100 X
+1(
+#830000
+0(
+#835000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b100 l
+b11010 W
+b11010 _
+b11010 X
+b11010 `
+1(
+#840000
+0(
+#845000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b111110000 B
+b111110000 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b101 l
+b10 j
+b11001 `
+b11001 X
+1(
+#850000
+0(
+#855000
+b1111 7
+b1111 8
+b0 =
+b1111 C
+b1111 Y
+b0 >
+b111000100 B
+b111000100 a
+b0 ;
+b1111 D
+b1111 Q
+b0 <
+b11 j
+11
+b0 l
+0A
+0@
+b111101011 X
+b111101011 `
+b111101111 h
+1(
+#860000
+0(
+#865000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+b1110 _
+b1110 W
+01
+b1 l
+b100 j
+b111000011 h
+b1110 `
+b1110 X
+1(
+#870000
+0(
+#875000
+b101 j
+b10 l
+b1101 W
+b1101 _
+b1101 X
+b1101 `
+1(
+#880000
+0(
+#885000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b1100 _
+b1100 W
+b11 l
+12
+b0 j
+b1100 `
+b1100 X
+1(
+#890000
+0(
+#895000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b100 l
+b11010 W
+b11010 _
+b11010 X
+b11010 `
+1(
+#900000
+0(
+#905000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b111110000 B
+b111110000 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b101 l
+b10 j
+b11001 `
+b11001 X
+1(
+#910000
+0(
+#915000
+b1111 7
+b1111 8
+b0 =
+b1111 C
+b1111 Y
+b0 >
+b111000100 B
+b111000100 a
+b0 ;
+b1111 D
+b1111 Q
+b0 <
+b11 j
+11
+b0 l
+0A
+0@
+b111101011 X
+b111101011 `
+b111101111 h
+1(
+#920000
+0(
+#925000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+b1110 _
+b1110 W
+01
+b1 l
+b100 j
+b111000011 h
+b1110 `
+b1110 X
+1(
+#930000
+0(
+#935000
+b101 j
+b10 l
+b1101 W
+b1101 _
+b1101 X
+b1101 `
+1(
+#940000
+0(
+#945000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b1100 _
+b1100 W
+b11 l
+12
+b0 j
+b1100 `
+b1100 X
+1(
+#950000
+0(
+#955000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b100 l
+b11010 W
+b11010 _
+b11010 X
+b11010 `
+1(
+#960000
+0(
+#965000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b111110000 B
+b111110000 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b101 l
+b10 j
+b11001 `
+b11001 X
+1(
+#970000
+0(
+#975000
+b1111 7
+b1111 8
+b0 =
+b1111 C
+b1111 Y
+b0 >
+b111000100 B
+b111000100 a
+b0 ;
+b1111 D
+b1111 Q
+b0 <
+b11 j
+11
+b0 l
+0A
+0@
+b111101011 X
+b111101011 `
+b111101111 h
+1(
+#980000
+0(
+#985000
+b0 C
+b0 Y
+b0 7
+b0 D
+b0 Q
+b0 8
+b1110 _
+b1110 W
+01
+b1 l
+b100 j
+b111000011 h
+b1110 `
+b1110 X
+1(
+#990000
+0(
+#995000
+b101 j
+b10 l
+b1101 W
+b1101 _
+b1101 X
+b1101 `
+1(
+#1000000
+0(
+#1005000
+b1111 C
+b1111 Y
+b1111 9
+b1111 D
+b1111 Q
+b1111 :
+b1100 _
+b1100 W
+b11 l
+12
+b0 j
+b1100 `
+b1100 X
+1(
+#1010000
+0(
+#1015000
+b0 C
+b0 Y
+b0 9
+b0 D
+b0 Q
+b0 :
+02
+b1 j
+b100 l
+b11010 W
+b11010 _
+b11010 X
+b11010 `
+1(
+#1020000
+0(
+#1025000
+b10110 ;
+b111101100 D
+b111101100 Q
+b11101100 <
+b111110000 B
+b111110000 a
+b10110 =
+b111101100 C
+b111101100 Y
+b11101100 >
+b0 _
+1@
+b0 W
+1A
+b101 l
+b10 j
+b11001 `
+b11001 X
+1(
+#1030000
+0(
+#1035000
+b1111 7
+b1111 8
+b0 =
+b1111 C
+b1111 Y
+b0 >
+b111000100 B
+b111000100 a
+b0 ;
+b1111 D
+b1111 Q
+b0 <
+b11 j
+11
+b0 l
+0A
+0@
+b111101011 X
+b111101011 `
+b111101111 h
+1(
+#1040000
+0(
