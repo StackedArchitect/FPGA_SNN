@@ -26,8 +26,8 @@
 This project implements an **XOR (Exclusive OR) logic gate** using a **Spiking Neural Network** designed for FPGA hardware. Unlike traditional digital logic that uses AND/OR gates, this design mimics how biological neurons work in the brain.
 
 **Date Created**: January 28, 2026  
-**Author**: Senior FPGA Engineer  
-**Status**: ✅ Complete and Tested
+**Author**: Arvind
+**Status**: Complete and Tested
 
 ### XOR Truth Table
 
