@@ -1,0 +1,17 @@
+# Build artifacts
+*.vcd
+*.sim
+*_sim
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
