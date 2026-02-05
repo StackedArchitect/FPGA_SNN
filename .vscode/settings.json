@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "./snn_test": true,
+        "clear": true,
+        "iverilog": true,
+        "./test_current": true
+    }
+}

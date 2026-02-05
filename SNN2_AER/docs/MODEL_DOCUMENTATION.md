@@ -30,8 +30,8 @@
 
 ```
 INPUT LAYER (4 pixels)          HIDDEN LAYER (8 neurons)      OUTPUT LAYER (3 classes)
-                                                              
-Pixel 0 (top-left)    ──────┬──→ H0 (pixel 0 detector)       
+
+Pixel 0 (top-left)    ──────┬──→ H0 (pixel 0 detector)
                             │   H1 (pixel 1 detector)       ──┬──→ O0 (L-shape)
 Pixel 1 (top-right)   ──────┼──→ H2 (pixel 2 detector)         │
                             │   H3 (pixel 3 detector)       ──┼──→ O1 (T-shape)
@@ -43,15 +43,16 @@ Pixel 3 (bottom-right)──────┴──→ H6 (diagonal detector)
 
 ### Layer Specifications
 
-| Layer | Size | Neuron Type | Function |
-|-------|------|-------------|----------|
-| Input | 4 | AER Encoder | Convert 2×2 pixels to spike trains |
-| Hidden | 8 | LIF Neurons | Feature extraction and pattern detection |
-| Output | 3 | LIF Neurons | Class discrimination (L/T/Cross) |
+| Layer  | Size | Neuron Type | Function                                 |
+| ------ | ---- | ----------- | ---------------------------------------- |
+| Input  | 4    | AER Encoder | Convert 2×2 pixels to spike trains       |
+| Hidden | 8    | LIF Neurons | Feature extraction and pattern detection |
+| Output | 3    | LIF Neurons | Class discrimination (L/T/Cross)         |
 
-**Total Parameters:** 56 weights + 3 biases  
-- Input → Hidden: 4 × 8 = 32 weights  
-- Hidden → Output: 8 × 3 = 24 weights  
+**Total Parameters:** 56 weights + 3 biases
+
+- Input → Hidden: 4 × 8 = 32 weights
+- Hidden → Output: 8 × 3 = 24 weights
 - Output biases: 3 values
 
 ---
@@ -71,17 +72,21 @@ L-SHAPE          T-SHAPE          CROSS
 ```
 
 ### Pattern Encoding
+
 - **Pixel = 1:** Spike emitted at time t=0
 - **Pixel = 0:** No spike (silent)
 - **AER Format:** 4-bit address + valid signal
 
 ### Classification Objective
+
 Given a 2×2 binary pattern, determine which class it belongs to:
+
 - **Output 0 (O0):** L-shape pattern
-- **Output 1 (O1):** T-shape pattern  
+- **Output 1 (O1):** T-shape pattern
 - **Output 2 (O2):** Cross pattern
 
 ### Success Criterion
+
 The output neuron corresponding to the correct class should spike **first** or spike **most** within a 100ns evaluation window.
 
 ---
@@ -93,6 +98,7 @@ The output neuron corresponding to the correct class should spike **first** or s
 **Input:** 2×2 binary pixel array `[P0, P1, P2, P3]`
 
 **Process:**
+
 1. **AER Pixel Encoder** receives 4-bit pixel data
 2. For each pixel = 1 at position `i`:
    - Generate AER address: `addr = i` (2-bit)
@@ -101,6 +107,7 @@ The output neuron corresponding to the correct class should spike **first** or s
 3. Timing: All active pixels spike within first 10ns
 
 **Example (T-shape `[1,1,0,1]`):**
+
 ```
 t=0ns:  AER output: addr=0, valid=1  (P0=1 fires)
 t=1ns:  AER output: addr=1, valid=1  (P1=1 fires)
@@ -126,6 +133,7 @@ For each hidden neuron `H_j` (j = 0..7):
    - When `Input[i]` spikes: detect spike event
 
 2. **Weighted summation:**
+
    ```
    IF Input[i] spikes at time t THEN:
        membrane_potential[j] += WEIGHT_I[i]_H[j]
@@ -136,11 +144,12 @@ For each hidden neuron `H_j` (j = 0..7):
    - Weights accumulate in membrane potential
 
 **Example (T-shape, neuron H5):**
+
 ```
 Initial: V_mem[5] = 0
 
 t=0ns:  I0 spikes → V_mem[5] += WEIGHT_I0_H5 = 0
-t=1ns:  I1 spikes → V_mem[5] += WEIGHT_I1_H5 = 0  
+t=1ns:  I1 spikes → V_mem[5] += WEIGHT_I1_H5 = 0
 t=2ns:  I3 spikes → V_mem[5] += WEIGHT_I3_H5 = 8
 
 Result: V_mem[5] = 8
@@ -151,6 +160,7 @@ Result: V_mem[5] = 8
 For each hidden neuron `H_j`:
 
 1. **Compare to threshold:**
+
    ```
    IF membrane_potential[j] >= THRESHOLD_HIDDEN THEN:
        SPIKE: Output spike at time t
@@ -162,6 +172,7 @@ For each hidden neuron `H_j`:
    - Binary spike output: 0 (silent) or 1 (spike)
 
 **Example (H5 with V_mem=8):**
+
 ```
 8 < 15  →  NO SPIKE
 H5 remains silent for this pattern
@@ -175,12 +186,13 @@ For all non-spiking neurons:
 Every 10ns:
     IF membrane_potential[j] > 0 THEN:
         membrane_potential[j] -= LEAK_RATE
-        
+
     IF membrane_potential[j] < 0 THEN:
         membrane_potential[j] = 0
 ```
 
 **Parameters:**
+
 - `LEAK_RATE = 1` (decay per 10ns)
 - Prevents indefinite charge accumulation
 - Implements temporal dynamics
@@ -203,6 +215,7 @@ For each output neuron `O_k` (k = 0, 1, 2):
    - Accumulate weighted contributions
 
 2. **Weighted summation:**
+
    ```
    FOR each hidden neuron j in 0..7:
        IF Hidden[j] spikes at time t THEN:
@@ -214,6 +227,7 @@ For each output neuron `O_k` (k = 0, 1, 2):
    - First-to-threshold wins (competitive)
 
 **Example (T-shape, output O1):**
+
 ```
 Initial: V_mem[1] = 0
 
@@ -235,6 +249,7 @@ IF bias_signal[k] = 1 THEN:
 ```
 
 **Usage:**
+
 - Training mode: Biases guide correct classification
 - Inference mode: Biases = 0 (pure pattern matching)
 
@@ -245,6 +260,7 @@ IF bias_signal[k] = 1 THEN:
 For each output neuron `O_k`:
 
 1. **Threshold comparison:**
+
    ```
    IF membrane_potential[k] >= THRESHOLD_OUTPUT THEN:
        SPIKE: Output spike at time t
@@ -258,10 +274,12 @@ For each output neuron `O_k`:
    ```
 
 **Parameters:**
+
 - `THRESHOLD_OUTPUT = 30` (higher than hidden layer)
 - Winner-take-all competition
 
 **Example (T-shape):**
+
 ```
 t=40ns: V_mem[1] = 33 → SPIKE on O1
         spike_count[1] = 1
@@ -306,6 +324,7 @@ ELSE:
 ```
 
 **Example (T-shape pattern):**
+
 ```
 Input: [1,1,0,1]
 Expected: O1 (T-shape)
@@ -328,6 +347,7 @@ Result: ✓ PASS (O1 == expected)
 **Purpose:** Convert spatial pixel patterns to temporal spike events
 
 **Interface:**
+
 ```verilog
 Input:  pixel_data[3:0]     // 4-bit binary pixel array
 Output: aer_addr[1:0]       // 2-bit address (which pixel)
@@ -335,6 +355,7 @@ Output: aer_addr[1:0]       // 2-bit address (which pixel)
 ```
 
 **Encoding Algorithm:**
+
 ```
 FOR each pixel i in 0..3:
     IF pixel_data[i] == 1 THEN:
@@ -347,11 +368,13 @@ aer_valid <= 0  // Terminate encoding
 ```
 
 **Timing:**
+
 - Spike width: 1ns per event
 - Inter-spike interval: 1ns minimum
 - Total encoding time: ≤ 10ns for 4 pixels
 
 **Properties:**
+
 - **Sparse:** Only active pixels generate spikes
 - **Asynchronous:** No global clock dependency
 - **Address-based:** Preserves spatial information
@@ -363,12 +386,14 @@ aer_valid <= 0  // Terminate encoding
 **Purpose:** Core computational unit with biological dynamics
 
 **State Variables:**
+
 ```verilog
 reg signed [15:0] membrane_potential  // Membrane voltage (V_mem)
 reg               spike_out            // Binary spike output
 ```
 
 **Dynamics Equation:**
+
 ```
 dV/dt = -V/τ + I_syn
 
@@ -379,13 +404,14 @@ Where:
 ```
 
 **Discrete Time Implementation:**
+
 ```verilog
 always @(posedge clk) begin
     // 1. Synaptic integration
     if (input_spike[i]) begin
         membrane_potential <= membrane_potential + weight[i];
     end
-    
+
     // 2. Threshold detection
     if (membrane_potential >= threshold) begin
         spike_out <= 1;
@@ -393,7 +419,7 @@ always @(posedge clk) begin
     end else begin
         spike_out <= 0;
     end
-    
+
     // 3. Leak dynamics
     if (membrane_potential > 0) begin
         membrane_potential <= membrane_potential - leak_rate;
@@ -402,12 +428,14 @@ end
 ```
 
 **Parameters:**
+
 - `THRESHOLD_HIDDEN = 15`
 - `THRESHOLD_OUTPUT = 30`
 - `LEAK_RATE = 1` (per 10ns clock)
 - `REFRACTORY_PERIOD = 0` (no dead time)
 
 **Key Properties:**
+
 1. **Integration:** Accumulates weighted inputs over time
 2. **Nonlinearity:** Binary spike output (threshold)
 3. **Leak:** Temporal decay for forgetting
@@ -420,21 +448,25 @@ end
 **Purpose:** Modulate spike transmission between neurons
 
 **Model:**
+
 ```
 Output_current = Input_spike × Weight
 ```
 
 **Weight Encoding:**
+
 ```verilog
 parameter signed [7:0] WEIGHT_I0_H5 = 8;  // 8-bit signed integer
 ```
 
 **Properties:**
+
 - **Range:** [0, 15] for excitatory connections
 - **Precision:** Integer (no floating point)
 - **Fixed:** Weights set at compile time (no online learning)
 
 **Synaptic Delay:**
+
 - Propagation: 1 clock cycle (1ns)
 - No axonal delay modeling
 
@@ -445,6 +477,7 @@ parameter signed [7:0] WEIGHT_I0_H5 = 8;  // 8-bit signed integer
 **Purpose:** Instantiate and connect all neurons
 
 **Module Hierarchy:**
+
 ```
 snn_core_pattern_recognition
 ├── aer_pixel_encoder
@@ -453,6 +486,7 @@ snn_core_pattern_recognition
 ```
 
 **Connectivity Matrix:**
+
 ```verilog
 // Input → Hidden
 wire [7:0] hidden_spikes;
@@ -478,6 +512,7 @@ end
 ```
 
 **Simulation Clock:**
+
 - Frequency: 1 GHz (1ns period)
 - Simulation time: 100ns per pattern
 - Total cycles: 100 per inference
@@ -499,6 +534,7 @@ I3:    [ 0,   0,   0,  15,   0,   8,   0,   8]
 ```
 
 **Interpretation:**
+
 - **H0-H3:** Strong (15) single-pixel detectors
   - H0 fires when I0 active (top-left)
   - H1 fires when I1 active (top-right)
@@ -532,6 +568,7 @@ H7:    [  0,    15,    15 ]  ← T/Cross detector
 ```
 
 **Critical Findings:**
+
 1. **H0, H1 = 0:** Manual tuning tried to boost these (failed). Zero is optimal!
 2. **H5_O1 = 3:** Small weight crucial for T-shape (vs. manual attempts at 10, 5)
 3. **H2_O2 = 3:** Non-obvious Cross discriminator
@@ -541,6 +578,7 @@ H7:    [  0,    15,    15 ]  ← T/Cross detector
 ### Pattern-Specific Weight Activation
 
 **L-shape [1,0,1,1]:**
+
 ```
 Active inputs: I0, I2, I3
 Hidden activation: H0(15), H2(15), H3(15), H6(16), H7(8)
@@ -554,6 +592,7 @@ Winner: O0 (first to threshold or more spikes)
 ```
 
 **T-shape [1,1,0,1]:**
+
 ```
 Active inputs: I0, I1, I3
 Hidden activation: H0(15), H1(15), H3(15), H4(16), H5(8), H7(8)
@@ -567,6 +606,7 @@ Winner: O1 (highest potential: 33 vs 30)
 ```
 
 **Cross [0,1,1,1]:**
+
 ```
 Active inputs: I1, I2, I3
 Hidden activation: H1(15), H2(15), H3(15), H5(16), H7(16)
@@ -591,15 +631,15 @@ Time (ns)   Event
 0           AER encoding begins
 0-10        Input spikes emitted (active pixels)
 10          AER encoding complete
-            
+
 10-20       Hidden layer integration starts
 15          First hidden neurons reach threshold
 20-30       Hidden layer spikes peak
-            
+
 30-40       Output layer integration starts
 40          First output neuron spikes
 50-80       Output competition continues
-            
+
 100         Evaluation window closes
             Winner determined
             Classification result logged
@@ -608,11 +648,13 @@ Time (ns)   Event
 ### Temporal Precision
 
 **Why timing matters:**
+
 1. **Spike ordering:** Earlier spikes have more impact (integrate first)
 2. **Leak dynamics:** Late spikes may leak away before threshold
 3. **Competition:** First-to-spike often wins output
 
 **Example:**
+
 ```
 Pattern: T-shape
 
@@ -629,21 +671,25 @@ Result: O1 wins due to earlier threshold crossing
 ### Verilog Modules
 
 **1. `aer_pixel_encoder.v`**
+
 - Lines: 89
 - Function: Convert 2×2 pixels to AER spike stream
 - Parameters: None (fixed 4-pixel encoding)
 
 **2. `lif_neuron_stdp.v`**
+
 - Lines: 187
 - Function: LIF neuron with STDP capability (STDP disabled in current config)
 - Parameters: Threshold, leak rate, weight precision
 
 **3. `snn_core_pattern_recognition.v`**
+
 - Lines: 312
 - Function: Full network instantiation and connectivity
 - Parameters: 56 weights + 3 biases (from `weight_parameters.vh`)
 
 **4. `tb_snn_pattern_recognition.v`**
+
 - Lines: 245
 - Function: Testbench with 12-pattern test suite
 - Coverage: Basic, bias-assisted, occlusion, extended duration
@@ -653,12 +699,14 @@ Result: O1 wins due to earlier threshold crossing
 ### Synthesis Considerations
 
 **FPGA Resource Usage (Estimated):**
+
 - **LUTs:** ~500 (for 11 neurons + encoders)
 - **Flip-Flops:** ~200 (state registers)
 - **Clock:** 1 GHz possible on modern FPGAs
 - **Latency:** 100ns per inference (100 clock cycles)
 
 **Scalability:**
+
 - Current: 4→8→3 (11 neurons, 59 parameters)
 - 3×3 expansion: 9→16→3 (28 neurons, ~200 parameters)
 - Resource scaling: ~Linear in neuron count
@@ -670,6 +718,7 @@ Result: O1 wins due to earlier threshold crossing
 ### Test Suite Results (12 Tests)
 
 **TEST 1: Pure STDP Inference (2/3 PASS)**
+
 ```
 L [1,0,1,1] → O0 ✓ PASS
 T [1,1,0,1] → O0 ✗ FAIL (expected O1, weak discrimination)
@@ -677,6 +726,7 @@ X [0,1,1,1] → O2 ✓ PASS
 ```
 
 **TEST 2: With Bias Signals (3/3 PASS)**
+
 ```
 L [1,0,1,1] → O0 ✓ PASS (bias helps)
 T [1,1,0,1] → O1 ✓ PASS (bias correction)
@@ -684,6 +734,7 @@ X [0,1,1,1] → O2 ✓ PASS
 ```
 
 **TEST 3: Occlusions (1/3 PASS)**
+
 ```
 L [1,0,0,1] → O2 ✗ FAIL (partial pattern confuses)
 T [1,1,0,0] → O1 ✓ PASS (top-row sufficient)
@@ -691,6 +742,7 @@ X [0,1,1,0] → O1 ✗ FAIL (missing pixel)
 ```
 
 **TEST 4: Extended Duration (3/3 PASS)**
+
 ```
 L [1,0,1,1] → O0 ✓ PASS (longer integration)
 T [1,1,0,1] → O1 ✓ PASS (more spikes help)
@@ -701,12 +753,12 @@ X [0,1,1,1] → O2 ✓ PASS
 
 ### Per-Class Performance
 
-| Class | Tests | Passed | Accuracy | Notes |
-|-------|-------|--------|----------|-------|
-| L-shape | 4 | 4 | **100%** | Perfect discrimination |
-| T-shape | 4 | 3 | 75% | Improved from 25% (manual) |
-| Cross | 4 | 2 | 50% | Slight degradation from 75% |
-| **Total** | **12** | **9** | **75.0%** | Production-ready |
+| Class     | Tests  | Passed | Accuracy  | Notes                       |
+| --------- | ------ | ------ | --------- | --------------------------- |
+| L-shape   | 4      | 4      | **100%**  | Perfect discrimination      |
+| T-shape   | 4      | 3      | 75%       | Improved from 25% (manual)  |
+| Cross     | 4      | 2      | 50%       | Slight degradation from 75% |
+| **Total** | **12** | **9**  | **75.0%** | Production-ready            |
 
 ---
 
@@ -721,6 +773,7 @@ X            0    2    2    (2 misclass as T)
 ```
 
 **Analysis:**
+
 - L-shape never confused (distinct pattern)
 - T-shape occasionally confused with L-shape (share bottom-right pixel)
 - Cross sometimes confused with T-shape (share right column)
@@ -821,11 +874,13 @@ parameter BIAS_OUTPUT_2 = 0;
 ### Network Forward Pass
 
 **Input encoding:**
+
 ```
 S_input[i](t) = δ(t) if pixel[i] = 1, else 0
 ```
 
 **Hidden layer:**
+
 ```
 V_hidden[j](t) = Σᵢ W_I[i]_H[j] × S_input[i](t) - leak × t
 
@@ -833,6 +888,7 @@ S_hidden[j](t) = 1 if V_hidden[j](t) ≥ θ_hidden, else 0
 ```
 
 **Output layer:**
+
 ```
 V_output[k](t) = Σⱼ W_H[j]_O[k] × S_hidden[j](t) - leak × t
 
@@ -840,11 +896,13 @@ S_output[k](t) = 1 if V_output[k](t) ≥ θ_output, else 0
 ```
 
 **Decision:**
+
 ```
 class = argmax_k Σₜ S_output[k](t)
 ```
 
 Where:
+
 - `S`: Spike train (binary)
 - `V`: Membrane potential (continuous)
 - `W`: Weight matrix
@@ -855,31 +913,34 @@ Where:
 
 ## Comparison Table
 
-| Metric | STDP | Manual | Optimized |
-|--------|------|--------|-----------|
-| Accuracy | 33.3% | 58.3% | **75.0%** |
-| L-shape | 25% | 75% | **100%** |
-| T-shape | 25% | 25% | **75%** |
-| Cross | 50% | 75% | 50% |
-| Method | Unsupervised | Hand-crafted | Algorithmic |
-| Time | 2 hours | 4 hours | 30 min |
-| Iterations | 1000 epochs | ~20 trials | 50 trials |
+| Metric     | STDP         | Manual       | Optimized   |
+| ---------- | ------------ | ------------ | ----------- |
+| Accuracy   | 33.3%        | 58.3%        | **75.0%**   |
+| L-shape    | 25%          | 75%          | **100%**    |
+| T-shape    | 25%          | 25%          | **75%**     |
+| Cross      | 50%          | 75%          | 50%         |
+| Method     | Unsupervised | Hand-crafted | Algorithmic |
+| Time       | 2 hours      | 4 hours      | 30 min      |
+| Iterations | 1000 epochs  | ~20 trials   | 50 trials   |
 
 ---
 
 ## Future Enhancements
 
 ### Short-term (Feasible)
+
 1. **More hidden neurons:** 8 → 12 or 16 for richer features
 2. **Output bias tuning:** Small biases to correct imbalances
 3. **Extended search:** 500+ trials to find 80%+ weights
 
 ### Medium-term (Requires Design)
+
 1. **3×3 patterns:** 512-pattern space, STDP becomes viable
 2. **Online learning:** Enable STDP for adaptation
 3. **Recurrent connections:** Add feedback for temporal memory
 
 ### Long-term (Research)
+
 1. **Deep SNN:** Add 3rd hidden layer for hierarchy
 2. **Convolutional structure:** Weight sharing for larger images
 3. **Neuromorphic hardware:** Deploy on Intel Loihi or SpiNNaker
@@ -891,6 +952,7 @@ Where:
 This SNN model demonstrates effective 2×2 pattern classification using biologically-inspired spiking neurons. Starting from 33% random performance, systematic optimization achieved 75% accuracy through algorithmic weight search.
 
 **Key Achievements:**
+
 - ✅ Perfect L-shape discrimination (100%)
 - ✅ Strong T-shape improvement (+50 points)
 - ✅ Hardware-efficient implementation
@@ -899,12 +961,13 @@ This SNN model demonstrates effective 2×2 pattern classification using biologic
 **Production Status:** Ready for deployment at 75% accuracy
 
 **Recommended Next Steps:**
+
 1. Deploy current model for 2×2 pattern recognition tasks
 2. Collect real-world performance data
 3. If higher accuracy needed, expand to 3×3 architecture
 
 ---
 
-*Document generated: February 5, 2026*  
-*Model version: Optimized Random Search v1.0*  
-*Maintainer: See PROJECT_COMPLETE.md for contact info*
+_Document generated: February 5, 2026_  
+_Model version: Optimized Random Search v1.0_  
+_Maintainer: See PROJECT_COMPLETE.md for contact info_

@@ -24,6 +24,7 @@ iverilog -o snn_sim -g2012 \
 ```
 
 **Expected Output:**
+
 ```
 TEST SUITE 1: 2/3 PASS
 TEST SUITE 2: 3/3 PASS
@@ -36,14 +37,14 @@ Success rate: 75.0%
 
 ## Performance Metrics
 
-| Metric | Value |
-|--------|-------|
-| Overall Accuracy | 75.0% |
+| Metric           | Value      |
+| ---------------- | ---------- |
+| Overall Accuracy | 75.0%      |
 | L-shape Accuracy | 100% (4/4) |
-| T-shape Accuracy | 75% (3/4) |
-| Cross Accuracy | 50% (2/4) |
-| Inference Time | <100ns |
-| Clock Frequency | 1 GHz |
+| T-shape Accuracy | 75% (3/4)  |
+| Cross Accuracy   | 50% (2/4)  |
+| Inference Time   | <100ns     |
+| Clock Frequency  | 1 GHz      |
 
 ---
 
@@ -59,6 +60,7 @@ Success rate: 75.0%
 ## File Structure
 
 ### Core Implementation
+
 ```
 hardware/
 ├── lif_neuron_stdp.v                    # LIF neuron model (187 lines)
@@ -70,6 +72,7 @@ hardware/
 ```
 
 ### Optimization Tools
+
 ```
 python/
 ├── fast_optimize.py                     # Random search optimizer
@@ -77,6 +80,7 @@ python/
 ```
 
 ### Results and Logs
+
 ```
 results/
 ├── final_optimization.json              # Optimization results
@@ -86,6 +90,7 @@ results/
 ```
 
 ### Documentation
+
 ```
 docs/
 ├── MODEL_DOCUMENTATION.md               # Complete model guide (this doc)
@@ -105,10 +110,12 @@ docs/
 **Active weights:** `weight_parameters.vh` (optimized via random search)
 
 **Input → Hidden:** Manual design (baseline)
+
 - Direct pixel detectors (H0-H3): weight=15
 - Feature detectors (H4-H7): weight=8
 
 **Hidden → Output:** Algorithmic optimization
+
 ```
         O0(L)  O1(T)  O2(X)
 H0:    [  0,     0,     0 ]
@@ -122,6 +129,7 @@ H7:    [  0,    15,    15 ]
 ```
 
 **Key discoveries:**
+
 - H0, H1 weights = 0 (counter-intuitive but optimal)
 - H5_O1 = 3 (small value critical for T-shape)
 - H2_O2 = 3 (non-obvious Cross discriminator)
@@ -130,14 +138,14 @@ H7:    [  0,    15,    15 ]
 
 ## Optimization History
 
-| Phase | Method | Accuracy | Time | Status |
-|-------|--------|----------|------|--------|
-| STDP Training | Unsupervised | 33.3% | 2 hrs | ❌ Failed |
-| Manual Design | Expert knowledge | 58.3% | 4 hrs | ✅ Baseline |
-| Manual Tuning | Trial-and-error | 41.7% | 1.5 hrs | ❌ Worse |
-| Coordinate Descent | Greedy | 58.3% | 10 min | ⚠️ No gain |
-| Random Search | Stochastic | **75.0%** | 30 min | ✅ **Success** |
-| Extended Search | More trials | 75.0% | 90 min | ⚠️ Plateau |
+| Phase              | Method           | Accuracy  | Time    | Status         |
+| ------------------ | ---------------- | --------- | ------- | -------------- |
+| STDP Training      | Unsupervised     | 33.3%     | 2 hrs   | ❌ Failed      |
+| Manual Design      | Expert knowledge | 58.3%     | 4 hrs   | ✅ Baseline    |
+| Manual Tuning      | Trial-and-error  | 41.7%     | 1.5 hrs | ❌ Worse       |
+| Coordinate Descent | Greedy           | 58.3%     | 10 min  | ⚠️ No gain     |
+| Random Search      | Stochastic       | **75.0%** | 30 min  | ✅ **Success** |
+| Extended Search    | More trials      | 75.0%     | 90 min  | ⚠️ Plateau     |
 
 **Total optimization effort:** 200 hardware evaluations
 
@@ -148,21 +156,25 @@ H7:    [  0,    15,    15 ]
 ## Test Coverage
 
 ### Test Suite 1: Pure Inference (No Bias)
+
 - **Purpose:** Test learned weights without supervision
 - **Results:** 2/3 PASS (L✓, T✗, X✓)
 - **Issue:** T-shape weak without bias
 
 ### Test Suite 2: Bias-Assisted Inference
+
 - **Purpose:** Test with supervisory bias signals
 - **Results:** 3/3 PASS (L✓, T✓, X✓)
 - **Status:** Perfect with supervision
 
 ### Test Suite 3: Robustness (Occlusions)
+
 - **Purpose:** Test partial patterns
 - **Results:** 1/3 PASS (L✗, T✓, X✗)
 - **Analysis:** Sensitive to missing pixels
 
 ### Test Suite 4: Extended Duration
+
 - **Purpose:** Longer integration time
 - **Results:** 3/3 PASS (L✓, T✓, X✓)
 - **Status:** Perfect with more time
@@ -172,18 +184,22 @@ H7:    [  0,    15,    15 ]
 ## Known Limitations
 
 ### Pattern Confusion
+
 - T-shape occasionally misclassified as L-shape (1/4 tests)
 - Cross sometimes misclassified as T-shape (2/4 tests)
 
 ### Occlusion Sensitivity
+
 - Partial patterns often fail (only 1/3 passing)
 - Missing pixels significantly degrade performance
 
 ### Pattern Space
+
 - Limited to 2×2 binary patterns (16 possible)
 - Small dataset for learning algorithms
 
 ### No Online Learning
+
 - Weights fixed at compile time
 - Cannot adapt to new patterns
 
@@ -284,16 +300,19 @@ iverilog -o snn_sim -g2012 \
 ## Next Steps
 
 ### Short-term Improvements
+
 1. **More trials:** Run 500+ random search trials for 80%+ accuracy
 2. **Bias tuning:** Small output biases to correct class imbalances
 3. **More hidden neurons:** Expand from 8 to 12-16 for richer features
 
 ### Medium-term Enhancements
+
 1. **3×3 patterns:** Expand to 512-pattern space
 2. **STDP revisited:** Retry unsupervised learning at larger scale
 3. **Recurrent connections:** Add feedback for temporal dynamics
 
 ### Long-term Research
+
 1. **Deep SNN:** Multi-layer hierarchy
 2. **Convolutional structure:** Weight sharing for scalability
 3. **Neuromorphic hardware:** Deploy on Intel Loihi / SpiNNaker
@@ -303,17 +322,20 @@ iverilog -o snn_sim -g2012 \
 ## Support and Documentation
 
 ### Complete Documentation
+
 - **Model Guide:** [docs/MODEL_DOCUMENTATION.md](docs/MODEL_DOCUMENTATION.md)
 - **Optimization Journey:** [docs/OPTIMIZATION_JOURNEY.md](docs/OPTIMIZATION_JOURNEY.md)
 - **Architecture:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - **STDP Analysis:** [docs/STDP_FAILURE_ANALYSIS.md](docs/STDP_FAILURE_ANALYSIS.md)
 
 ### Key Resources
+
 - **Project Overview:** [PROJECT_COMPLETE.md](PROJECT_COMPLETE.md)
 - **README:** [README.md](README.md)
 - **Commit Summary:** [COMMIT_SUMMARY.md](COMMIT_SUMMARY.md)
 
 ### Contact
+
 See [PROJECT_COMPLETE.md](PROJECT_COMPLETE.md) for maintainer information.
 
 ---
@@ -321,17 +343,20 @@ See [PROJECT_COMPLETE.md](PROJECT_COMPLETE.md) for maintainer information.
 ## Version History
 
 ### v1.0 (Current) - February 5, 2026
+
 - ✅ Random search optimization (75% accuracy)
 - ✅ Extended search (200 total trials)
 - ✅ Complete documentation
 - ✅ Production deployment
 
 ### v0.2 - Manual Design
+
 - Manual weight design (58.3% accuracy)
 - Failed manual tuning attempts
 - Coordinate descent (no improvement)
 
 ### v0.1 - STDP Baseline
+
 - STDP training attempts (33.3% accuracy)
 - Failed unsupervised learning
 - Baseline architecture established
@@ -344,6 +369,6 @@ See [PROJECT_COMPLETE.md](PROJECT_COMPLETE.md) for maintainer information.
 
 ---
 
-*Last updated: February 5, 2026*  
-*Deployment version: 1.0*  
-*Optimizer: Random Search (200 trials)*
+_Last updated: February 5, 2026_  
+_Deployment version: 1.0_  
+_Optimizer: Random Search (200 trials)_
