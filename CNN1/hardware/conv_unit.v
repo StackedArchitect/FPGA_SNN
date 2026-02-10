@@ -54,12 +54,15 @@ module conv_unit #(
     
     // Adder tree for summing products
     // Level 1: 9 -> 5 (pairs + 1 leftover)
+    // Note: Products are 16-bit, sums are 20-bit (automatic sign-extension)
+    /* verilator lint_off WIDTHEXPAND */
     wire signed [ACC_WIDTH-1:0] sum_l1 [0:4];
     assign sum_l1[0] = products[0] + products[1];
     assign sum_l1[1] = products[2] + products[3];
     assign sum_l1[2] = products[4] + products[5];
     assign sum_l1[3] = products[6] + products[7];
     assign sum_l1[4] = products[8];
+    /* verilator lint_on WIDTHEXPAND */
     
     // Level 2: 5 -> 3
     wire signed [ACC_WIDTH-1:0] sum_l2 [0:2];

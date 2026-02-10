@@ -1,14 +1,20 @@
 /*
- * Max Pooling Module - 2x2 Window
+ * Max Pooling Module - 2x2 Window (SIMPLIFIED VERSION)
  * 
  * Performs 2x2 max pooling with stride 2
- * Takes streaming input from conv layer (26x26x4)
- * Outputs pooled result (13x13x4)
+ * Takes streaming input from conv layer (26x26)
+ * Outputs pooled result (13x13)
  *
  * Operation:
- *   - Collects 2x2 blocks of pixels
- *   - Outputs the maximum value in each block
+ *   - Buffers one complete row
+ *   - When second row arrives, processes pairs of columns
+ *   - Outputs max of each 2x2 block
  *   - Stride of 2 means non-overlapping windows
+ *
+ * Timing:
+ *   - Needs to buffer first row (26 pixels)
+ *   - Then outputs 13 values per row pair
+ *   - Total: 26 input rows -> 13 output rows
  */
 
 module max_pool #(
@@ -27,119 +33,86 @@ module max_pool #(
     output reg valid_out
 );
 
-    // State machine for collecting 2x2 blocks
-    localparam IDLE = 2'd0;
-    localparam COLLECT = 2'd1;
-    localparam OUTPUT = 2'd2;
-    
-    reg [1:0] state;
-    
-    // Buffer to store one row (needed for 2x2 window)
+    // Row buffer to store one complete row
     reg signed [DATA_WIDTH-1:0] row_buffer [0:INPUT_WIDTH-1];
     
-    // Current 2x2 window
-    reg signed [DATA_WIDTH-1:0] window [0:3];  // [0 1]
-                                                // [2 3]
-    
     // Counters
-    reg [$clog2(INPUT_WIDTH):0] col_count;
-    reg [$clog2(INPUT_HEIGHT):0] row_count;
-    reg [1:0] window_pos;  // Position within 2x2 window (0-3)
+    reg [$clog2(INPUT_WIDTH+1)-1:0] col_in;    // Input column counter (0-25)
+    reg [$clog2(INPUT_HEIGHT+1)-1:0] row_in;   // Input row counter (0-25)
+    reg odd_row;                                 // Track odd/even rows
     
-    // Max finding
-    wire signed [DATA_WIDTH-1:0] max_01, max_23, max_final;
-    assign max_01 = (window[0] > window[1]) ? window[0] : window[1];
-    assign max_23 = (window[2] > window[3]) ? window[2] : window[3];
-    assign max_final = (max_01 > max_23) ? max_01 : max_23;
+    // Temporary storage for 2x2 window
+    reg signed [DATA_WIDTH-1:0] top_left, top_right, bottom_left;
+    
+    // Max computation
+    wire signed [DATA_WIDTH-1:0] max_top, max_bottom, max_final;
+    assign max_top = (top_left > top_right) ? top_left : top_right;
+    assign max_bottom = (bottom_left > data_in) ? bottom_left : data_in;
+    assign max_final = (max_top > max_bottom) ? max_top : max_bottom;
     
     integer i;
     
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            state <= IDLE;
-            col_count <= 0;
-            row_count <= 0;
-            window_pos <= 0;
+            col_in <= 0;
+            row_in <= 0;
+            odd_row <= 0;
             data_out <= 0;
             valid_out <= 0;
+            top_left <= 0;
+            top_right <= 0;
+            bottom_left <= 0;
             
             for (i = 0; i < INPUT_WIDTH; i = i + 1) begin
                 row_buffer[i] <= 0;
             end
             
-            for (i = 0; i < 4; i = i + 1) begin
-                window[i] <= 0;
-            end
-            
         end else if (enable && valid_in) begin
-            case (state)
-                IDLE: begin
-                    state <= COLLECT;
-                    window_pos <= 0;
-                    valid_out <= 0;
+            
+            if (odd_row) begin
+                // Even row index (0, 2, 4, ...) - just buffer it
+                row_buffer[col_in] <= data_in;
+                valid_out <= 0;
+                
+                col_in <= col_in + 1;
+                if (col_in == INPUT_WIDTH - 1) begin
+                    col_in <= 0;
+                    row_in <= row_in + 1;
+                    odd_row <= ~odd_row;
                 end
                 
-                COLLECT: begin
-                    // Collect 2x2 window
-                    // First row: positions 0,1 (from buffer and current)
-                    // Second row: positions 2,3 (from buffer and current)
+            end else begin
+                // Odd row index (1, 3, 5, ...) - process with buffered row
+                
+                if (col_in[0] == 0) begin
+                    // Even column (0, 2, 4, ...) - load 2x2 window top half
+                    top_left <= row_buffer[col_in];
+                    top_right <= row_buffer[col_in + 1];
+                    bottom_left <= data_in;
+                    valid_out <= 0;
                     
-                    if (row_count == 0) begin
-                        // First row - just buffer
-                        row_buffer[col_count] <= data_in;
-                        col_count <= col_count + 1;
-                        
-                        if (col_count == INPUT_WIDTH - 1) begin
-                            col_count <= 0;
-                            row_count <= 1;
-                        end
-                        valid_out <= 0;
-                        
-                    end else begin
-                        // Subsequent rows - form 2x2 windows
-                        case (window_pos)
-                            2'd0: begin  // Top-left
-                                window[0] <= row_buffer[col_count];
-                                window_pos <= 2'd1;
-                                valid_out <= 0;
-                            end
-                            
-                            2'd1: begin  // Top-right
-                                window[1] <= row_buffer[col_count];
-                                window[2] <= data_in;  // Bottom-left (previous col)
-                                row_buffer[col_count] <= data_in;
-                                window_pos <= 2'd2;
-                                valid_out <= 0;
-                            end
-                            
-                            2'd2: begin  // Bottom-right (actually comes next clock)
-                                window[3] <= data_in;
-                                row_buffer[col_count] <= data_in;
-                                window_pos <= 2'd3;
-                                valid_out <= 0;
-                            end
-                            
-                            2'd3: begin  // Output max
-                                data_out <= max_final;
-                                valid_out <= 1;
-                                window_pos <= 2'd0;
-                                
-                                col_count <= col_count + 1;
-                                if (col_count >= INPUT_WIDTH - 2) begin
-                                    col_count <= 0;
-                                    row_count <= row_count + 1;
-                                    if (row_count >= INPUT_HEIGHT - 1) begin
-                                        row_count <= 0;
-                                        state <= IDLE;
-                                    end
-                                end
-                            end
-                        endcase
+                end else begin
+                    // Odd column (1, 3, 5, ...) - complete window and output max
+                    // data_in is bottom_right
+                    data_out <= max_final;
+                    valid_out <= 1;
+                end
+                
+                // Update buffer with current row
+                row_buffer[col_in] <= data_in;
+                
+                col_in <= col_in + 1;
+                if (col_in == INPUT_WIDTH - 1) begin
+                    col_in <= 0;
+                    row_in <= row_in + 1;
+                    odd_row <= ~odd_row;
+                    
+                    if (row_in == INPUT_HEIGHT - 1) begin
+                        // Done processing all rows
+                        row_in <= 0;
                     end
                 end
-                
-                default: state <= IDLE;
-            endcase
+            end
             
         end else begin
             valid_out <= 0;

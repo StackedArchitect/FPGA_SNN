@@ -1,21 +1,25 @@
 # Makefile for CNN Hardware Simulation
-# Uses Icarus Verilog for simulation
+# Uses Icarus Verilog and Verilator for simulation
 
 # Tools
 IVERILOG = iverilog
 VVP = vvp
 GTKWAVE = gtkwave
+VERILATOR = verilator
 
 # Directories
 SRC_DIR = .
 TB_DIR = .
 BUILD_DIR = build
+VLT_DIR = $(BUILD_DIR)/verilator
 
 # Create build directory
 $(shell mkdir -p $(BUILD_DIR))
+$(shell mkdir -p $(VLT_DIR))
 
 # Compilation flags
 VFLAGS = -Wall -g2012
+VLINT_FLAGS = --lint-only -Wall --timing
 
 # Default target
 all: help
@@ -25,16 +29,22 @@ help:
 	@echo "CNN Hardware Simulation Makefile"
 	@echo "========================================="
 	@echo ""
-	@echo "Available targets:"
+	@echo "Icarus Verilog targets:"
 	@echo "  make test_line_buffer  - Test line buffer module"
 	@echo "  make test_conv_unit    - Test convolution unit"
 	@echo "  make test_relu         - Test ReLU module"
 	@echo "  make test_max_pool     - Test max pooling module"
 	@echo "  make test_system       - System integration test"
 	@echo "  make test_all          - Run all tests"
+	@echo ""
+	@echo "Verilator targets:"
+	@echo "  make lint_all          - Lint all modules with Verilator"
+	@echo "  make lint_max_pool     - Lint max_pool module"
+	@echo "  make lint_line_buffer  - Lint line_buffer module"
+	@echo ""
+	@echo "Utility:"
 	@echo "  make clean             - Clean build files"
-	@echo "  make wave_line_buffer  - View line buffer waveform"
-	@echo "  make wave_conv_unit    - View conv unit waveform"
+	@echo "  make wave_*            - View waveforms"
 	@echo ""
 
 # Line Buffer Test
@@ -108,6 +118,47 @@ wave_conv_unit:
 wave_max_pool:
 	$(GTKWAVE) max_pool_test.vcd &
 
+# Verilator Lint Targets
+lint_line_buffer:
+	@echo "\n========================================="
+	@echo "Linting line_buffer.v with Verilator"
+	@echo "========================================="
+	$(VERILATOR) $(VLINT_FLAGS) --top-module line_buffer $(SRC_DIR)/line_buffer.v
+	@echo "✓ Lint complete\n"
+
+lint_conv_unit:
+	@echo "\n========================================="
+	@echo "Linting conv_unit.v with Verilator"
+	@echo "========================================="
+	$(VERILATOR) $(VLINT_FLAGS) --top-module conv_unit $(SRC_DIR)/conv_unit.v
+	@echo "✓ Lint complete\n"
+
+lint_max_pool:
+	@echo "\n========================================="
+	@echo "Linting max_pool.v with Verilator"
+	@echo "========================================="
+	$(VERILATOR) $(VLINT_FLAGS) --top-module max_pool $(SRC_DIR)/max_pool.v
+	@echo "✓ Lint complete\n"
+
+lint_relu:
+	@echo "\n========================================="
+	@echo "Linting relu.v with Verilator"
+	@echo "========================================="
+	$(VERILATOR) $(VLINT_FLAGS) --top-module relu $(SRC_DIR)/relu.v
+	@echo "✓ Lint complete\n"
+
+lint_dense:
+	@echo "\n========================================="
+	@echo "Linting dense_layer.v with Verilator"
+	@echo "========================================="
+	$(VERILATOR) $(VLINT_FLAGS) --top-module dense_layer $(SRC_DIR)/dense_layer.v
+	@echo "✓ Lint complete\n"
+
+lint_all: lint_line_buffer lint_conv_unit lint_relu lint_max_pool lint_dense
+	@echo "\n========================================="
+	@echo "All modules linted successfully!"
+	@echo "========================================="
+
 # Clean
 clean:
 	rm -rf $(BUILD_DIR)
@@ -115,4 +166,4 @@ clean:
 	rm -f *.out
 	@echo "✓ Cleaned build files"
 
-.PHONY: all help test_line_buffer test_conv_unit test_relu test_all clean wave_line_buffer wave_conv_unit
+.PHONY: all help test_line_buffer test_conv_unit test_relu test_max_pool test_system test_all clean wave_line_buffer wave_conv_unit wave_max_pool lint_line_buffer lint_conv_unit lint_max_pool lint_relu lint_dense lint_all

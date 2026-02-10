@@ -18,8 +18,20 @@ module tb_system_simple();
     reg pixel_valid;
     
     // Line buffer outputs
-    wire [PIXEL_WIDTH-1:0] window [0:8];
+    wire [PIXEL_WIDTH-1:0] window_unsigned [0:8];
+    wire signed [PIXEL_WIDTH-1:0] window [0:8];
     wire window_valid;
+    
+    // Convert unsigned window to signed for conv unit
+    assign window[0] = $signed(window_unsigned[0]);
+    assign window[1] = $signed(window_unsigned[1]);
+    assign window[2] = $signed(window_unsigned[2]);
+    assign window[3] = $signed(window_unsigned[3]);
+    assign window[4] = $signed(window_unsigned[4]);
+    assign window[5] = $signed(window_unsigned[5]);
+    assign window[6] = $signed(window_unsigned[6]);
+    assign window[7] = $signed(window_unsigned[7]);
+    assign window[8] = $signed(window_unsigned[8]);
     
     // Conv output (filter 0 only)
     wire signed [19:0] conv_out;
@@ -62,7 +74,7 @@ module tb_system_simple();
         .enable(enable),
         .pixel_in(pixel_in),
         .pixel_valid(pixel_valid),
-        .window(window),
+        .window(window_unsigned),
         .window_valid(window_valid)
     );
     
@@ -102,13 +114,15 @@ module tb_system_simple();
         $display("Testing: LineBuffer -> Conv -> ReLU");
         $display("========================================");
         
-        $dumpfile("system_integration_test.vcd");
-        $dumpvars(0, tb_system_simple);
+        // VCD dumping disabled due to Icarus Verilog limitation with unpacked arrays
+        // $dumpfile("system_integration_test.vcd");
+        // $dumpvars(0, line_buf);
         
         // Load test image
         $display("\nLoading test image...");
         $readmemh("../data/integration_test/input_image.mem", test_image);
         $display("Test image loaded (784 pixels)");
+        $display("First few pixels: %h %h %h %h", test_image[0], test_image[1], test_image[150], test_image[200]);
         
         // Initialize
         rst_n = 0;
@@ -162,13 +176,25 @@ module tb_system_simple();
         $finish;
     end
     
-    // Monitor conv outputs
+    // Monitor windows and conv outputs
+    integer first_window_printed;
+    initial first_window_printed = 0;
+    
     always @(posedge clk) begin
+        // Display first window when valid
+        if (window_valid && enable && !first_window_printed) begin
+            $display("\nFirst 3x3 window detected");
+            // Icarus Verilog has issues with unpacked arrays in $display
+            // Commenting out for now
+            // $display("  [%3d %3d %3d]", window_unsigned[0], window_unsigned[1], window_unsigned[2]);
+            first_window_printed = 1;
+        end
+        
         if (conv_valid && enable) begin            
             conv_output_count = conv_output_count + 1;
             
             // Display first few and last few outputs
-            if (conv_output_count <= 5 || conv_output_count > 671) begin
+            if (conv_output_count <= 10 || conv_output_count > 666) begin
                 $display("Output #%04d: Conv=%6d  ReLU=%6d", 
                          conv_output_count, conv_out, relu_out);
             end
