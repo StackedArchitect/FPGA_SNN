@@ -1,0 +1,14 @@
+// Expected class scores
+// True label: 4
+// Predicted: 4
+
+Class 0: -6.303523
+Class 1: -4.892097
+Class 2: -5.346021
+Class 3: -2.956550
+Class 4: 7.444193
+Class 5: -6.123991
+Class 6: -5.870781
+Class 7: -0.993627
+Class 8: -5.161180
+Class 9: 0.306720

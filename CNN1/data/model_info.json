@@ -1,0 +1,30 @@
+{
+    "architecture": {
+        "conv1": {
+            "type": "Conv2D",
+            "in_channels": 1,
+            "out_channels": 4,
+            "kernel_size": 3,
+            "stride": 1,
+            "padding": 0
+        },
+        "activation": "ReLU",
+        "pool": {
+            "type": "MaxPool2D",
+            "kernel_size": 2,
+            "stride": 2
+        },
+        "fc": {
+            "type": "Linear",
+            "in_features": 676,
+            "out_features": 10
+        }
+    },
+    "accuracy": 97.39,
+    "input_shape": [
+        1,
+        28,
+        28
+    ],
+    "output_classes": 10
+}

@@ -1,0 +1,15 @@
+True Label: 7
+Float Prediction: 7
+Quantized Prediction: 7
+
+Quantized Class Scores:
+  Class 0: -7.243598
+  Class 1: -9.019972
+  Class 2: -2.965805
+  Class 3: 2.974492
+  Class 4: -9.595735
+  Class 5: -10.086008
+  Class 6: -19.362234
+  Class 7: 11.776795
+  Class 8: -4.940912
+  Class 9: -2.074062
